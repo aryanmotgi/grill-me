@@ -14,6 +14,7 @@ const ITEMS: { id: PaneName; label: string }[] = [
   { id: "claude-web", label: "Claude.ai" },
   { id: "timeline", label: "Timeline" },
   { id: "search", label: "Search" },
+  { id: "memory", label: "Memory" },
   { id: "cost", label: "Cost" },
   { id: "voice", label: "Voice" },
   { id: "overview", label: "Overview" },

@@ -1401,6 +1401,8 @@ dependencies = [
  "chrono",
  "notify",
  "notify-debouncer-mini",
+ "once_cell",
+ "regex",
  "rusqlite",
  "serde",
  "serde_json",

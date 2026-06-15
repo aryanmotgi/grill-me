@@ -8,6 +8,7 @@ import Projects from "./panes/Projects";
 import ClaudeWeb from "./panes/ClaudeWeb";
 import Timeline from "./panes/Timeline";
 import Search from "./panes/Search";
+import Memory from "./panes/Memory";
 import Cost from "./panes/Cost";
 import Voice from "./panes/Voice";
 import Overview from "./panes/Overview";
@@ -137,6 +138,7 @@ export default function App() {
         {pane === "claude-web" && <ClaudeWeb />}
         {pane === "timeline" && <Timeline />}
         {pane === "search" && <Search />}
+        {pane === "memory" && <Memory projectRoot={projectRoot} />}
         {pane === "cost" && <Cost />}
         {pane === "voice" && <Voice />}
         {pane === "overview" && <Overview state={state} grillmeMd={grillmeMd} />}

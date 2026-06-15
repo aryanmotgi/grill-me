@@ -25,6 +25,7 @@ export type PaneName =
   | "claude-web"
   | "timeline"
   | "search"
+  | "memory"
   | "cost"
   | "voice"
   | "overview"

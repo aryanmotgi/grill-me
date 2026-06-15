@@ -5,6 +5,8 @@ mod cost;
 mod db;
 mod export;
 mod ingest;
+mod memory;
+mod routing;
 mod search;
 mod watcher;
 
@@ -78,6 +80,22 @@ pub fn run() {
                     warn!("failed to open grillme.db at {}: {}", db_path.display(), e);
                 }
             }
+            // Memory graph (concepts/files/people/decisions per project + global).
+            // Separate SQLite file so the main DB stays focused.
+            let memory_path = data_dir.join("grillme-memory.db");
+            match memory::Memory::open(&memory_path) {
+                Ok(mem) => {
+                    info!("opened grillme-memory.db at {}", memory_path.display());
+                    app.manage(mem);
+                }
+                Err(e) => {
+                    warn!(
+                        "failed to open memory db at {}: {}",
+                        memory_path.display(),
+                        e
+                    );
+                }
+            }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -111,6 +129,12 @@ pub fn run() {
             ingest::ingest_cli_history,
             ingest::list_timeline,
             search::search_messages,
+            memory::memory_ingest_message,
+            memory::memory_list_project_nodes,
+            memory::memory_list_global_nodes,
+            memory::memory_related_chats,
+            memory::memory_backfill,
+            routing::classify_prompt,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
