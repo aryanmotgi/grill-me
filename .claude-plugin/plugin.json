@@ -1,0 +1,6 @@
+{
+  "name": "grillme-skill",
+  "skills": [
+    "./skills/productivity/grillme"
+  ]
+}

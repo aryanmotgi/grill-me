@@ -28,7 +28,7 @@ If no `GRILLME.md`, ask 4 questions, one at a time:
 3. What is the *one* thing that has to work for it to count as done?
 4. What is blocking you right now?
 
-Write answers into `GRILLME.md` using the template at `templates/GRILLME.md` in this skill's repo.
+Write answers into `GRILLME.md` in the user's project root using the template at `./templates/GRILLME.md` (relative to this SKILL.md).
 
 ## Phase 2 — Grill
 
@@ -74,15 +74,21 @@ User wants Codex to do the actual coding. Workflow:
    ```
    git checkout -b feat/<short-name>
    ```
-2. Build the Codex prompt by combining:
-   - Contents of `PLAN.md`
-   - Relevant build prompt from `builds/` (pick by task type: scaffold, feature, fix, refactor)
-3. Run Codex non-interactively:
+2. Pick the right build prompt from `./builds/` next to this SKILL.md:
+   - `builds/scaffold.md` — new project / empty repo
+   - `builds/feature.md` — add capability to existing code
+   - `builds/fix.md` — bug fix
+3. Concatenate `PLAN.md` + chosen build prompt and pipe to Codex non-interactively. Run from project root:
    ```
-   codex exec --full-auto "$(cat PLAN.md) $(cat <path-to-build-prompt>)"
+   cat PLAN.md <skill-dir>/builds/feature.md | codex exec --sandbox workspace-write --skip-git-repo-check -o /tmp/codex-last.txt -
    ```
-   If `codex` CLI is missing, tell user to install: `npm i -g @openai/codex`. Then print the prompt for manual paste as fallback.
-4. Wait for Codex to finish. Read the diff: `git diff`.
+   Notes on flags:
+   - `--sandbox workspace-write` — lets Codex edit files in cwd
+   - `--skip-git-repo-check` — safe; skill already verified branch
+   - `-o /tmp/codex-last.txt` — captures Codex's final message for the teach phase
+   - Trailing `-` means "read prompt from stdin"
+4. If `codex` not installed or errors: print the assembled prompt to user, tell them to install (`npm i -g @openai/codex`) or paste into Codex web. Stop. Do not write code yourself.
+5. Once Codex finishes, read the diff: `git diff` and `cat /tmp/codex-last.txt`.
 
 ## Phase 5 — Teach
 
