@@ -18,6 +18,12 @@ fi
 ln -s "$SKILL_SRC" "$TARGET"
 echo "Linked $SKILL_SRC -> $TARGET"
 
+# Ensure all shared helpers are executable.
+if [ -d "$SKILL_SRC/_shared" ]; then
+  find "$SKILL_SRC/_shared" -type f -name '*.sh' -exec chmod +x {} +
+  echo "chmod +x on $SKILL_SRC/_shared/*.sh"
+fi
+
 if ! command -v codex >/dev/null 2>&1; then
   echo ""
   echo "WARNING: codex CLI not found. Install with:"
