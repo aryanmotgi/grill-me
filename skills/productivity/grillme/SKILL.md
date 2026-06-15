@@ -64,7 +64,24 @@ Write a tight plan to `PLAN.md` in repo root. Format:
 <observable check>
 ```
 
-Show user. Get yes before moving on.
+Show user. Then run the plan through reviews before locking.
+
+## Phase 3.5 — Plan reviews (gstack)
+
+PLAN.md is a draft. Stress-test it before Codex sees it.
+
+Default: invoke `autoplan` skill (gstack). It chains CEO + design + eng + DX reviews with auto-decisions. One call, hole-poking from four angles, updates PLAN.md.
+
+Slow mode (user says "review slow"): run reviews one at a time, let user weigh in between each:
+
+1. `plan-ceo-review` — is this worth building? scope cut?
+2. `plan-eng-review` — is the approach sound? hidden complexity?
+3. `plan-design-review` — UX/visual gaps? hierarchy issues?
+4. `plan-devex-review` — will future-you hate this?
+
+After reviews, show updated PLAN.md to user. Get yes before moving on.
+
+If user says "skip reviews", skip. But warn once: "you'll catch fewer issues."
 
 ## Phase 4 — Hand off to Codex
 
@@ -101,14 +118,16 @@ Codex shipped code. User did not write it. Teach them what changed:
    - Why it works (the *mechanism*, not just the outcome)
 3. Pick one concept from the diff and quiz them: "What happens if X?"
 4. If they fail the quiz, re-explain. Loop.
+5. When user nails a non-obvious concept, log it via gstack `learn` skill so it sticks across projects.
 
 ## Phase 6 — Ship
 
 When step works:
 1. Update `GRILLME.md` "where I left off" section
-2. Commit with clear message
-3. Push branch + open PR (global rule)
-4. Ask: "next step or stop?"
+2. Use gstack `review` skill on the diff (pre-landing PR review)
+3. Use gstack `ship` skill — handles base branch detect, bump VERSION, CHANGELOG, commit, push, PR
+4. Optional: gstack `design-review` if UI changed, `qa` if web app
+5. Ask: "next step or stop?"
 
 ## Rules
 

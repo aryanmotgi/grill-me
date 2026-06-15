@@ -48,6 +48,18 @@ skills/
 install.sh                           dev-mode symlink to ~/.claude/skills
 ```
 
+## gstack integration
+
+If gstack skills are installed, `/grillme` automatically chains them:
+
+| Phase | gstack skill |
+|-------|--------------|
+| Plan reviews | `autoplan` (CEO + design + eng + DX) |
+| Teach | `learn` (log non-obvious wins) |
+| Ship | `review`, `ship`, optional `design-review` / `qa` |
+
+Slow mode: say "review slow" to run CEO / eng / design / DX reviews one at a time.
+
 ## Differences vs mattpocock/skills
 
 His repo has its own one-paragraph `grill-me` skill and a separate `teach` skill. This repo bundles orient + grill + plan + Codex handoff + teach + ship into a single `/grillme` loop with project memory (`GRILLME.md`) so the next session picks up where you left off.
