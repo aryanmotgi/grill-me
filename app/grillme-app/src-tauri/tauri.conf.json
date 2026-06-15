@@ -26,6 +26,7 @@
   "bundle": {
     "active": true,
     "targets": ["dmg", "app"],
+    "resources": ["../sidecar/**/*"],
     "category": "DeveloperTool",
     "shortDescription": "Live dashboard for vibe-coding sessions",
     "longDescription": "GrillMe watches your project's .grillme/state.json, PLAN.md, LEARNED.md, and GRILLME.md and renders a live dashboard with a hackathon timer, plan progress, learnings log, and Codex run status.",
@@ -38,7 +39,8 @@
     ],
     "macOS": {
       "minimumSystemVersion": "11.0",
-      "signingIdentity": "-"
+      "signingIdentity": "-",
+      "infoPlist": "Info.plist"
     }
   },
   "plugins": {}

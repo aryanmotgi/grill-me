@@ -20,4 +20,16 @@ export interface VersionMismatchPayload {
   version: unknown;
 }
 
-export type PaneName = "timer" | "plan" | "learn" | "codex";
+export type PaneName =
+  | "projects"
+  | "claude-web"
+  | "timeline"
+  | "search"
+  | "cost"
+  | "voice"
+  | "overview"
+  | "chat"
+  | "timer"
+  | "plan"
+  | "learn"
+  | "codex";

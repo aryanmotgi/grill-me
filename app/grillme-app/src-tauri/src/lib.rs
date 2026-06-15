@@ -1,8 +1,17 @@
+mod chat;
+mod claude_projects;
+mod claude_web;
+mod cost;
+mod db;
+mod export;
+mod ingest;
+mod search;
 mod watcher;
 
 use std::fs;
 use std::path::PathBuf;
-use tracing::info;
+use tauri::Manager;
+use tracing::{info, warn};
 use tracing_appender::rolling;
 use tracing_subscriber::{fmt, EnvFilter};
 
@@ -39,12 +48,69 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .manage(watcher::WatcherState::new())
+        .manage(chat::ChatState::new())
+        .manage(claude_web::ClaudeWebState::new())
+        .setup(|app| {
+            let data_dir = app
+                .path()
+                .app_data_dir()
+                .map_err(|e| format!("app_data_dir: {e}"))?;
+            let _ = fs::create_dir_all(&data_dir);
+            let db_path = data_dir.join("grillme.db");
+            match db::Db::open(&db_path) {
+                Ok(db) => {
+                    info!("opened grillme.db at {}", db_path.display());
+                    app.manage(db);
+                    // Auto-ingest Claude Code CLI history on startup. Cheap
+                    // because INSERT OR IGNORE makes re-runs idempotent and
+                    // BufReader streams the JSONL line-by-line. Runs in the
+                    // background so it does not block app launch.
+                    let app_handle = app.handle().clone();
+                    std::thread::spawn(move || {
+                        let state = app_handle.state::<db::Db>();
+                        match ingest::ingest_cli_history(state) {
+                            Ok(stats) => info!("auto-ingest: {stats:?}"),
+                            Err(e) => warn!("auto-ingest failed: {e}"),
+                        }
+                    });
+                }
+                Err(e) => {
+                    warn!("failed to open grillme.db at {}: {}", db_path.display(), e);
+                }
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             watcher::start_watch,
             watcher::stop_watch,
             watcher::read_watched_files,
             watcher::save_recent_project,
             watcher::get_recent_projects,
+            chat::start_chat,
+            chat::send_chat_message,
+            chat::interrupt_chat,
+            chat::stop_chat,
+            claude_projects::list_claude_projects,
+            claude_projects::list_claude_sessions,
+            claude_projects::read_claude_session,
+            claude_projects::pick_folder_dialog,
+            claude_projects::find_chats_for_folder,
+            claude_web::open_claude_window,
+            claude_web::close_claude_window,
+            claude_web::is_claude_window_open,
+            claude_web::show_claude_inline,
+            claude_web::move_claude_inline,
+            claude_web::hide_claude_inline,
+            claude_web::destroy_claude_inline,
+            claude_web::bridge_to_claude,
+            claude_web::enable_claude_scraper,
+            cost::get_usage_summary,
+            export::export_cli_session_markdown,
+            export::export_web_chat_markdown,
+            export::save_exported_chat_to_file,
+            ingest::ingest_cli_history,
+            ingest::list_timeline,
+            search::search_messages,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

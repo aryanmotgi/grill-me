@@ -4,6 +4,14 @@ import { listen, UnlistenFn } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import Welcome from "./Welcome";
 import Sidebar from "./Sidebar";
+import Projects from "./panes/Projects";
+import ClaudeWeb from "./panes/ClaudeWeb";
+import Timeline from "./panes/Timeline";
+import Search from "./panes/Search";
+import Cost from "./panes/Cost";
+import Voice from "./panes/Voice";
+import Overview from "./panes/Overview";
+import Chat from "./panes/Chat";
 import Timer from "./panes/Timer";
 import Plan from "./panes/Plan";
 import Learn from "./panes/Learn";
@@ -14,12 +22,13 @@ const SUPPORTED_VERSION = 1;
 
 export default function App() {
   const [projectRoot, setProjectRoot] = useState<string | null>(null);
-  const [pane, setPane] = useState<PaneName>("timer");
+  const [pane, setPane] = useState<PaneName>("projects");
   const [state, setState] = useState<GrillmeState | null>(null);
   const [planMd, setPlanMd] = useState("");
   const [learnedMd, setLearnedMd] = useState("");
   const [grillmeMd, setGrillmeMd] = useState("");
   const [versionError, setVersionError] = useState<string | null>(null);
+  const [learnCount, setLearnCount] = useState(0);
 
   const applyFile = useCallback((file: string, content: string) => {
     if (file === ".grillme/state.json") {
@@ -71,15 +80,26 @@ export default function App() {
     };
   }, [projectRoot, applyFile]);
 
-  // Keyboard shortcuts Cmd+1..4
+  // Defensive: hide the claude.ai inline window whenever the active pane is
+  // not the Claude.ai pane. Backed by a top-level WebviewWindow now, so
+  // hide() reliably maps to NSWindow.orderOut: on macOS.
+  useEffect(() => {
+    if (pane !== "claude-web") {
+      invoke("hide_claude_inline").catch(() => {});
+    }
+  }, [pane]);
+
+  // Keyboard shortcuts Cmd+1..6
   useEffect(() => {
     function onKey(ev: KeyboardEvent) {
       if (!ev.metaKey) return;
       const map: Record<string, PaneName> = {
-        "1": "timer",
-        "2": "plan",
-        "3": "learn",
-        "4": "codex",
+        "1": "projects",
+        "2": "overview",
+        "3": "timer",
+        "4": "plan",
+        "5": "learn",
+        "6": "codex",
       };
       const target = map[ev.key];
       if (target) {
@@ -110,12 +130,20 @@ export default function App() {
 
   return (
     <div className="app">
-      <Sidebar state={state} projectRoot={projectRoot} active={pane} onSelect={setPane} onSwitchProject={switchProject} />
+      <Sidebar state={state} projectRoot={projectRoot} active={pane} learnCount={learnCount} onSelect={setPane} onSwitchProject={switchProject} />
       <main className="main" aria-label={`${pane} pane`}>
         {versionError && <div className="banner">{versionError}</div>}
+        {pane === "projects" && <Projects projectRoot={projectRoot} />}
+        {pane === "claude-web" && <ClaudeWeb />}
+        {pane === "timeline" && <Timeline />}
+        {pane === "search" && <Search />}
+        {pane === "cost" && <Cost />}
+        {pane === "voice" && <Voice />}
+        {pane === "overview" && <Overview state={state} grillmeMd={grillmeMd} />}
+        {pane === "chat" && <Chat projectRoot={projectRoot} />}
         {pane === "timer" && <Timer state={state} />}
         {pane === "plan" && <Plan state={state} planMd={planMd} />}
-        {pane === "learn" && <Learn learnedMd={learnedMd} />}
+        {pane === "learn" && <Learn learnedMd={learnedMd} onCountChange={setLearnCount} />}
         {pane === "codex" && <Codex state={state} grillmeMd={grillmeMd} />}
       </main>
     </div>
