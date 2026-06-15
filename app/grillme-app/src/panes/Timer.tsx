@@ -33,9 +33,16 @@ export default function Timer({ state }: Props) {
   }, []);
 
   useEffect(() => {
-    // Reset fired milestones when session changes.
     firedRef.current = new Set();
   }, [state?.started_at]);
+
+  // Compute remaining (0 when no state) — must run before hooks below per Rules of Hooks.
+  const minsLeft = state
+    ? (new Date(state.started_at).getTime() + state.hackathon_hours * 3600 * 1000 - now) / 60000
+    : Infinity;
+
+  // Notifications — called every render to keep hook order stable.
+  useNotifyMilestones(minsLeft, firedRef, state != null);
 
   if (!state) {
     return (
@@ -48,10 +55,6 @@ export default function Timer({ state }: Props) {
   const start = new Date(state.started_at).getTime();
   const endMs = start + state.hackathon_hours * 3600 * 1000;
   const remaining = endMs - now;
-  const minsLeft = remaining / 60000;
-
-  // Notifications
-  useNotifyMilestones(minsLeft, firedRef);
 
   let cls = "timer-green";
   if (minsLeft < 5) cls = "timer-red timer-pulse";
@@ -63,9 +66,13 @@ export default function Timer({ state }: Props) {
     minute: "2-digit",
   });
 
+  const overtime = remaining <= 0;
+
   return (
     <div>
-      <div className={`timer-display ${cls}`}>{fmt(remaining)}</div>
+      <div className={`timer-display ${cls}`} aria-live="polite">
+        {overtime ? "OVERTIME" : fmt(remaining)}
+      </div>
       <div className="timer-sub">
         Started: {startedLocal} · Phase {state.phase_num}/6
         {state.current_step && state.total_steps
@@ -76,8 +83,13 @@ export default function Timer({ state }: Props) {
   );
 }
 
-function useNotifyMilestones(minsLeft: number, firedRef: React.MutableRefObject<Set<number>>) {
+function useNotifyMilestones(
+  minsLeft: number,
+  firedRef: React.MutableRefObject<Set<number>>,
+  active: boolean,
+) {
   useEffect(() => {
+    if (!active) return;
     for (const m of MILESTONES) {
       if (minsLeft <= m.mins && !firedRef.current.has(m.mins) && minsLeft > 0) {
         firedRef.current.add(m.mins);
@@ -94,5 +106,5 @@ function useNotifyMilestones(minsLeft: number, firedRef: React.MutableRefObject<
         })();
       }
     }
-  }, [Math.floor(minsLeft)]);
+  }, [Math.floor(minsLeft), active]);
 }

@@ -110,7 +110,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Sidebar state={state} active={pane} onSelect={setPane} onSwitchProject={switchProject} />
+      <Sidebar state={state} projectRoot={projectRoot} active={pane} onSelect={setPane} onSwitchProject={switchProject} />
       <main className="main" aria-label={`${pane} pane`}>
         {versionError && <div className="banner">{versionError}</div>}
         {pane === "timer" && <Timer state={state} />}
