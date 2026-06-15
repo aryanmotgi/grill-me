@@ -1,0 +1,235 @@
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --green: #3fb950;
+  --amber: #d29922;
+  --red: #f85149;
+  --radius: 6px;
+  font-family: -apple-system, "SF Pro Text", BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 16px;
+  min-height: 32px;
+  cursor: pointer;
+  transition: background 150ms ease-out, border-color 150ms ease-out;
+}
+button:hover { background: #1f262e; }
+button.primary {
+  background: var(--green);
+  color: #06140a;
+  border-color: var(--green);
+  font-weight: 600;
+}
+button.primary:hover { filter: brightness(1.1); }
+
+code, pre, .mono {
+  font-family: "SF Mono", ui-monospace, Menlo, Monaco, monospace;
+  font-size: 12px;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  height: 100vh;
+}
+
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar .phase {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.sidebar nav button {
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  color: var(--text);
+  min-height: 32px;
+}
+.sidebar nav button:hover { background: rgba(255,255,255,0.04); }
+.sidebar nav button.active {
+  background: rgba(63, 185, 80, 0.15);
+  color: var(--green);
+  font-weight: 600;
+}
+
+.main {
+  padding: 24px 32px;
+  overflow-y: auto;
+}
+
+.banner {
+  background: rgba(248, 81, 73, 0.1);
+  border: 1px solid var(--red);
+  color: var(--red);
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+
+/* Timer */
+.timer-display {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, sans-serif;
+  font-size: 72px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin: 24px 0 12px;
+}
+.timer-green { color: var(--green); }
+.timer-amber { color: var(--amber); }
+.timer-red { color: var(--red); }
+.timer-pulse { animation: pulse 1s ease-in-out infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.timer-sub {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+/* Plan */
+.plan-list { list-style: none; padding: 0; margin: 0; }
+.plan-list li {
+  padding: 8px 12px;
+  border-left: 2px solid transparent;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.plan-list li.current {
+  border-left-color: var(--green);
+  font-weight: 600;
+}
+.plan-list li.done {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+/* Learn */
+.learn-entry {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+.learn-entry .concept { font-weight: 600; }
+.learn-entry .date { color: var(--text-dim); font-size: 12px; margin-left: 8px; }
+.learn-entry pre {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  overflow-x: auto;
+  margin: 8px 0 0;
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 14px;
+  padding: 32px 0;
+  text-align: center;
+}
+
+/* Welcome */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  gap: 16px;
+}
+.welcome .logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--green), var(--amber));
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #06140a;
+}
+.welcome h1 { font-size: 28px; margin: 0; }
+.welcome p { color: var(--text-dim); margin: 0; }
+.welcome .tip { font-size: 12px; }
+.welcome code { background: var(--surface); padding: 1px 6px; border-radius: 4px; }
+
+.recent {
+  margin-top: 24px;
+  width: 100%;
+  text-align: left;
+}
+.recent h3 { font-size: 12px; color: var(--text-dim); text-transform: uppercase; margin: 0 0 8px; }
+.recent button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid var(--border);
+  margin-bottom: 4px;
+  font-size: 12px;
+}
