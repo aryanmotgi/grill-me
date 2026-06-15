@@ -1,14 +1,43 @@
+/* ============================================================
+   GrillMe — futuristic theme
+   Deep space + glassmorphism + neon accents.
+   ============================================================ */
+
 :root {
-  --bg: #0d1117;
-  --surface: #161b22;
-  --border: #30363d;
-  --text: #e6edf3;
-  --text-dim: #8b949e;
-  --green: #3fb950;
-  --amber: #d29922;
-  --red: #f85149;
-  --radius: 6px;
-  font-family: -apple-system, "SF Pro Text", BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Surfaces */
+  --bg: #050714;
+  --bg-elev: #0a0d1f;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-strong: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --text: #e8eef9;
+  --text-dim: #7a8499;
+
+  /* Neon accents */
+  --cyan: #00e5ff;
+  --magenta: #ff5ec4;
+  --violet: #7b61ff;
+
+  /* Timer state colors (laser-bright) */
+  --green: #00ff9d;
+  --amber: #ffb800;
+  --red: #ff3b6b;
+
+  /* Glow */
+  --glow-cyan: 0 0 24px rgba(0, 229, 255, 0.45), 0 0 64px rgba(0, 229, 255, 0.2);
+  --glow-green: 0 0 24px rgba(0, 255, 157, 0.45), 0 0 64px rgba(0, 255, 157, 0.2);
+  --glow-amber: 0 0 24px rgba(255, 184, 0, 0.5), 0 0 64px rgba(255, 184, 0, 0.22);
+  --glow-red: 0 0 28px rgba(255, 59, 107, 0.6), 0 0 72px rgba(255, 59, 107, 0.3);
+
+  /* Geometry */
+  --radius: 10px;
+  --radius-lg: 16px;
+
+  /* Typography */
+  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   color-scheme: dark;
 }
 
@@ -19,13 +48,37 @@ html, body, #root {
   padding: 0;
   height: 100vh;
   width: 100vw;
-  background: var(--bg);
   color: var(--text);
   overflow: hidden;
+  /* Layered: deep space + subtle conic gradient + faint grid */
+  background:
+    radial-gradient(ellipse at 20% -10%, rgba(123, 97, 255, 0.18), transparent 60%),
+    radial-gradient(ellipse at 110% 110%, rgba(0, 229, 255, 0.14), transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 94, 196, 0.06), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* Animated noise/grid overlay so the bg is alive without yelling */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  z-index: 0;
+}
+
+#root { position: relative; z-index: 1; }
 
 button {
   font: inherit;
+  font-weight: 500;
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);
@@ -33,52 +86,93 @@ button {
   padding: 8px 16px;
   min-height: 32px;
   cursor: pointer;
-  transition: background 150ms ease-out, border-color 150ms ease-out;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    background 180ms ease-out,
+    border-color 180ms ease-out,
+    transform 120ms ease-out,
+    box-shadow 180ms ease-out;
 }
-button:hover { background: #1f262e; }
+button:hover {
+  background: var(--surface-strong);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+button:active { transform: translateY(0); }
+
 button.primary {
-  background: var(--green);
-  color: #06140a;
-  border-color: var(--green);
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  color: #04060f;
+  border-color: transparent;
   font-weight: 600;
+  box-shadow: var(--glow-cyan);
 }
-button.primary:hover { filter: brightness(1.1); }
+button.primary:hover { filter: brightness(1.08); }
+
+.muted {
+  font: inherit;
+  opacity: 0.55;
+}
 
 code, pre, .mono {
-  font-family: "SF Mono", ui-monospace, Menlo, Monaco, monospace;
+  font-family: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, Monaco, monospace;
   font-size: 12px;
+  font-feature-settings: "ss01", "cv11";
 }
 
+/* ============================================================ Layout */
 .app {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 220px 1fr;
   height: 100vh;
 }
 
+/* ============================================================ Sidebar */
 .sidebar {
-  background: var(--surface);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
   border-right: 1px solid var(--border);
-  padding: 16px 12px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 20px 14px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+  position: relative;
+}
+/* Vertical neon edge on the right */
+.sidebar::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; right: -1px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(0, 229, 255, 0.35), transparent);
+  pointer-events: none;
 }
 
 .sidebar h2 {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, var(--text) 60%, var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .sidebar .phase {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 6px;
 }
 
 .dot {
@@ -86,6 +180,12 @@ code, pre, .mono {
   height: 8px;
   border-radius: 50%;
   background: var(--green);
+  box-shadow: var(--glow-green);
+  animation: dotPulse 2.4s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.25); opacity: 0.7; }
 }
 
 .sidebar nav {
@@ -98,99 +198,200 @@ code, pre, .mono {
 .sidebar nav button {
   text-align: left;
   background: transparent;
-  border: none;
-  padding: 8px 12px;
+  border: 1px solid transparent;
+  padding: 9px 14px;
   border-radius: var(--radius);
-  color: var(--text);
-  min-height: 32px;
+  color: var(--text-dim);
+  min-height: 36px;
+  letter-spacing: 0.02em;
+  backdrop-filter: none;
 }
-.sidebar nav button:hover { background: rgba(255,255,255,0.04); }
+.sidebar nav button:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  transform: none;
+}
 .sidebar nav button.active {
-  background: rgba(63, 185, 80, 0.15);
-  color: var(--green);
+  color: var(--cyan);
+  background:
+    linear-gradient(90deg, rgba(0, 229, 255, 0.12), rgba(123, 97, 255, 0.08));
+  border-color: rgba(0, 229, 255, 0.35);
+  box-shadow:
+    inset 2px 0 0 var(--cyan),
+    0 0 24px rgba(0, 229, 255, 0.18);
   font-weight: 600;
 }
 
+/* Switch project button gets the "secondary" treatment */
+.sidebar > button:last-child {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================================ Main pane */
 .main {
-  padding: 24px 32px;
+  padding: 32px 40px;
   overflow-y: auto;
+  position: relative;
 }
 
 .banner {
-  background: rgba(248, 81, 73, 0.1);
-  border: 1px solid var(--red);
+  background: linear-gradient(135deg, rgba(255, 59, 107, 0.15), rgba(255, 59, 107, 0.05));
+  border: 1px solid rgba(255, 59, 107, 0.4);
   color: var(--red);
   padding: 12px 16px;
   border-radius: var(--radius);
   margin-bottom: 16px;
+  box-shadow: var(--glow-red);
+  backdrop-filter: blur(8px);
 }
 
-/* Timer */
+/* ============================================================ Timer */
 .timer-display {
-  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, sans-serif;
-  font-size: 72px;
-  font-weight: 300;
-  letter-spacing: -0.02em;
+  font-family: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 128px;
+  font-weight: 200;
+  letter-spacing: -0.04em;
   line-height: 1;
-  margin: 24px 0 12px;
+  margin: 32px 0 16px;
+  display: inline-block;
+  text-shadow:
+    0 0 32px currentColor,
+    0 0 80px currentColor;
+  filter: saturate(1.2);
+  background: linear-gradient(180deg, currentColor, color-mix(in srgb, currentColor 60%, transparent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: text-shadow 400ms ease-out;
 }
+
 .timer-green { color: var(--green); }
 .timer-amber { color: var(--amber); }
 .timer-red { color: var(--red); }
-.timer-pulse { animation: pulse 1s ease-in-out infinite; }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+.timer-pulse {
+  animation: timerPulse 1.2s ease-in-out infinite;
+}
+@keyframes timerPulse {
+  0%, 100% {
+    text-shadow:
+      0 0 32px currentColor,
+      0 0 80px currentColor;
+  }
+  50% {
+    text-shadow:
+      0 0 56px currentColor,
+      0 0 120px currentColor,
+      0 0 200px currentColor;
+  }
 }
 
 .timer-sub {
   color: var(--text-dim);
-  font-size: 13px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-family: "SF Mono", ui-monospace, monospace;
 }
 
-/* Plan */
+/* ============================================================ Plan */
 .plan-list { list-style: none; padding: 0; margin: 0; }
 .plan-list li {
-  padding: 8px 12px;
-  border-left: 2px solid transparent;
-  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 16px;
+  margin-bottom: 6px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--surface);
+  backdrop-filter: blur(8px);
+  transition: background 180ms, border-color 180ms;
 }
+.plan-list li:hover { background: var(--surface-strong); }
 .plan-list li.current {
-  border-left-color: var(--green);
+  border-color: rgba(0, 229, 255, 0.35);
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.08), rgba(123, 97, 255, 0.04));
+  box-shadow: inset 3px 0 0 var(--cyan), 0 0 28px rgba(0, 229, 255, 0.15);
   font-weight: 600;
 }
 .plan-list li.done {
   text-decoration: line-through;
   color: var(--text-dim);
+  background: transparent;
 }
 
-/* Learn */
+/* ============================================================ Learn */
 .learn-entry {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 16px;
-  margin-bottom: 12px;
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  backdrop-filter: blur(12px);
+  transition: border-color 180ms, transform 180ms, box-shadow 180ms;
+  position: relative;
+  overflow: hidden;
 }
-.learn-entry .concept { font-weight: 600; }
-.learn-entry .date { color: var(--text-dim); font-size: 12px; margin-left: 8px; }
+.learn-entry::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--cyan), var(--magenta));
+  opacity: 0.7;
+}
+.learn-entry:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(0, 229, 255, 0.08);
+}
+.learn-entry .concept {
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+.learn-entry .date {
+  color: var(--text-dim);
+  font-size: 11px;
+  margin-left: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: "SF Mono", monospace;
+}
 .learn-entry pre {
-  background: var(--bg);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 8px 12px;
+  padding: 12px 14px;
   overflow-x: auto;
-  margin: 8px 0 0;
+  margin: 12px 0 0;
 }
 
 .empty {
   color: var(--text-dim);
   font-size: 14px;
-  padding: 32px 0;
+  padding: 64px 0;
   text-align: center;
+  letter-spacing: 0.02em;
 }
 
-/* Welcome */
+/* ============================================================ Codex */
+.codex-pane pre {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-family: "SF Mono", ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text);
+  overflow-x: auto;
+}
+
+/* ============================================================ Welcome */
 .welcome {
   display: flex;
   flex-direction: column;
@@ -198,38 +399,77 @@ code, pre, .mono {
   justify-content: center;
   text-align: center;
   height: 100%;
-  max-width: 420px;
+  max-width: 460px;
   margin: 0 auto;
-  gap: 16px;
+  gap: 20px;
 }
 .welcome .logo {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, var(--green), var(--amber));
+  width: 80px;
+  height: 80px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 50%),
+    linear-gradient(135deg, var(--cyan), var(--violet), var(--magenta));
   display: grid;
   place-items: center;
-  font-size: 32px;
-  font-weight: 700;
-  color: #06140a;
+  font-size: 36px;
+  font-weight: 800;
+  color: #04060f;
+  box-shadow: var(--glow-cyan);
+  letter-spacing: -0.04em;
 }
-.welcome h1 { font-size: 28px; margin: 0; }
-.welcome p { color: var(--text-dim); margin: 0; }
+.welcome h1 {
+  font-size: 36px;
+  margin: 0;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--text), var(--cyan) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.welcome p {
+  color: var(--text-dim);
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  max-width: 380px;
+}
 .welcome .tip { font-size: 12px; }
-.welcome code { background: var(--surface); padding: 1px 6px; border-radius: 4px; }
+.welcome code {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: "SF Mono", monospace;
+}
 
 .recent {
-  margin-top: 24px;
+  margin-top: 32px;
   width: 100%;
   text-align: left;
 }
-.recent h3 { font-size: 12px; color: var(--text-dim); text-transform: uppercase; margin: 0 0 8px; }
+.recent h3 {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  margin: 0 0 10px;
+}
 .recent button {
   display: block;
   width: 100%;
   text-align: left;
-  background: transparent;
-  border: 1px solid var(--border);
-  margin-bottom: 4px;
-  font-size: 12px;
+  font-size: 13px;
+  margin-bottom: 6px;
+  padding: 10px 14px;
 }
+
+/* ============================================================ Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.16); }
