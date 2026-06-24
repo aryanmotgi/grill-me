@@ -1,5 +1,6 @@
 {
   "name": "grillme-skill",
+  "version": "0.3.0",
   "skills": [
     "./skills/productivity/grillme"
   ]
